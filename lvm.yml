@@ -1,0 +1,35 @@
+---
+- hosts: all
+  become: ture
+  remote_user: vagrant
+  tasks: 
+    - name: Create a logical volume of 1200m
+      lvol:
+        vg: research
+        lv: data
+        size: '1200'
+      when: ansible_lvm.vgs.research is defined and ansible_lvm.vgs.research.size_g > "1.2"
+
+    - name: if 1200m volume is not available
+      debug:
+        msg: could not create logical volume at that size
+      when: ansible_lvm.vgs.research is defined and ansible_lvm.vgs.research.size_g < "1.2"
+
+    - name: Create a logical volume of 800m
+      lvol:
+        vg: research
+        lv: data
+        size: '800'
+      when: ansible_lvm.vgs.research is defined and ansible_lvm.vgs.research.size_g < "1.2"
+    
+    - name: create a file system with xfs format
+      filesystem:
+        fstype: xfs
+        dev: /dev/research/data
+      when: ansible_lvm.vgs.research is defined
+    
+    - name: if volume is not existed
+      debug:
+        msg: "Volume group does not exists"
+      when: ansible_lvm.vgs.research is not defined
+

@@ -1,0 +1,6 @@
+---
+- hosts: webservers
+  become: true
+  remote_user: vagrant
+  roles:
+    - apache

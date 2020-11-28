@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: vagrant
+
+  vars_prompt:
+    - name: "raw_disks"
+      prompt: "Raw disk used for create a Physical Volume"
+      private: no
+
+    - name: "vg_name"
+      prompt: "Name of the Volume Group"
+      private: no
+ 
+  tasks:
+
+    - name: Create the "{{ vg_name }}" Volume group.
+      lvg:
+        pvs: "/dev/{{ raw_disks }}"
+        vg: "{{ vg_name }}"
+        pesize: "4"
+        pv_options: '-Z y'
+        force: no
+        state: present
+ 

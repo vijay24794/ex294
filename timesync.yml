@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: true
+  remote_user: vagrant
+  vars:
+    - timesync_ntp_server:
+        - name: control
+          iburst: yes
+  roles:
+    - rhel-system-roles.timesync
+  
+  tasks:
+    - name: set timezone
+      timezone: 
+        name: Asia/Kolkata
+      notify: restart chronyd
+  handlers:
+    - name: restart chronyd
+      service: 
+        name: chronyd
+        state: restarted
+
+

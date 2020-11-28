@@ -1,0 +1,42 @@
+---
+- name: Create a using password vault
+  hosts: all
+  become: true
+  remote_user: vagrant
+  vars_files:
+    - users_list.yml
+    - locker.yml
+  tasks: 
+    - name: Creating a devops group
+      group:
+        name: devops
+        state: present
+      when: inventory_hostname in groups['dev'] or inventory_hostname in groups['test']
+
+    - name: Creating a opsmgr group
+      group:
+        name: opsmgr
+        state: present
+      when: inventory_hostname in groups['prod']
+
+    - name: Create user with job description of developer
+      user: 
+        name: "{{ item.name }}"
+        groups: devops
+        append: yes
+        password: "{{ pw_developer | password_hash('sha512') }}"
+      loop: "{{ users }}"
+      when: |
+            (item.job=='developer' and inventory_hostname in groups['dev']) or
+            (item.job=='developer' and inventory_hostname in groups['test'])
+    
+    - name: Create user with job description of manager
+      user: 
+        name: "{{ item.name }}"
+        groups: opsmgr
+        append: yes
+        password: "{{ pw_manager | password_hash('sha512') }}"
+      loop: "{{ users }}"
+      when: |
+            (item.job=='manager' and inventory_hostname in groups['prod'])
+            

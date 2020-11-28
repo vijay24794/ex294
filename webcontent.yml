@@ -1,0 +1,58 @@
+---
+- name: web content play
+  hosts: dev
+  become: true
+  remote_user: vagrant
+  tasks: 
+    - name: Install httpd and firewalld packages
+      yum: 
+        name: "{{ item }}"
+        state: present
+      loop:
+        - httpd
+        - firewalld
+
+    - name: Enble services
+      service:
+        name: "{{ item }}"
+        state: started
+      loop: 
+        - httpd
+        - firewalld
+
+    - name: Allow firewall roles
+      firewalld: 
+        service: http
+        state: enabled
+        immediate: yes
+        permanent: yes
+    
+    - name: creating webdev dir
+      file:
+        path: /webdev
+        state: directory
+        group: vagrant
+        mode: 2775
+        setype: httpd_sys_content_t
+
+    - name: create symbolic link
+      file: 
+        src: /webdev
+        dest: /var/www/html/webdev
+        state: link
+        force: yes
+
+    - name: Copy the content to index.html
+      copy:
+        content: "Development"
+        dest: /webdev/index.html
+        setype: httpd_sys_content_t
+      notify: restart httpd
+  handlers:
+    - name: restart httpd
+      service:
+        name: httpd
+        state: restarted
+
+
+

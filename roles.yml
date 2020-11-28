@@ -1,0 +1,19 @@
+---
+- name: play1 balancers group
+  hosts: all
+  become: true
+  remote_user: vagrant
+  tasks:
+    - name: include balancer role
+      include_role: 
+        name: balancer
+      when: inventory_hostname in groups['balancers']
+- name: play2 phphello 
+  hosts: all
+  become: true
+  remote_user: vagrant
+  tasks:
+    - name: include php role
+      include_role:
+         name: phphello
+      when: inventory_hostname in groups['webservers']

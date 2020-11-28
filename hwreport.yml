@@ -1,0 +1,59 @@
+---
+- hosts: all
+  become: true
+  remote_user: vagrant
+  tasks: 
+    - name: Dowling the hwreport.empty file
+      get_url:
+        url: http://repo/AppStream/hwreport.empty
+        dest: /root/hwreport.txt
+        force: yes
+    - name: replace hostname in hwreport
+      replace:
+        path: /root/hwreport.txt
+        regexp: "inventoryhostname"
+        replace: "{{ ansible_hostname }}"
+    
+    - name: replace totalmemory in hwreport
+      replace:
+        path: /root/hwreport.txt
+        regexp: "total_memory"
+        replace: "{{ ansible_memtotal_mb }}"
+
+    - name: replace bios_version in hwreport
+      replace:
+        path: /root/hwreport.txt
+        regexp: "bios_version"
+        replace: "{{ ansible_bios_version }}"
+
+    - name: replace SDA Size in hwreport
+      replace:
+        path: /root/hwreport.txt
+        regexp: "sda_size"
+        replace: "{{ ansible_devices.sda.size }}"
+      when: ansible_devices.sda.size is defined
+
+    - name: replace SDA Size, NONE when size is not find in hwreport
+      replace:
+        path: /root/hwreport.txt
+        regexp: "sda_size"
+        replace: "NONE"
+      when: ansible_devices.sda.size is not defined
+      
+    - name: replace SDB Size in hwreport
+      replace:
+        path: /root/hwreport.txt
+        regexp: "sdb_size"
+        replace: "{{ ansible_devices.sdb.size }}"
+      when: ansible_devices.sdb.size is defined
+
+    - name: replace NONE, when SDB Size is not find in hwreport
+      replace:
+        path: /root/hwreport.txt
+        regexp: "sdb_size"
+        replace: "NONE"
+      when: ansible_devices.sdb.size is not defined
+      
+
+        
+

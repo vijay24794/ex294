@@ -1,0 +1,29 @@
+---
+# tasks file for apache
+- name: Install httpd and firewalld Packages
+  yum: 
+    name: "{{ item }}"
+    state: present
+  loop: "{{ web_pkg }}"
+
+- name: Enable services
+  service: 
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop: "{{ web_svc }}"
+
+- name: Allow firewall rules
+  firewalld:
+    service: "{{ frule }}"
+    state: enabled
+    immediate: yes
+    permanent: yes
+
+- name: Copy jinja template
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify: restart httpd
+
+

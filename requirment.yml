@@ -1,0 +1,6 @@
+---
+- src: http://repo/AppStream/role1.tar.gz.tar.gz
+  name: balancer
+
+- src: http://repo/AppStream/role2.tar.gz.tar.gz
+  name: phphello

@@ -1,0 +1,18 @@
+---
+# tasks file for balancers
+#
+ - yum:
+    name: haproxy
+    state: present
+ - template:
+    src: balancer.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0644
+   notify: restart haproxy
+
+ - firewalld:
+    service: http
+    permanent: yes
+    immediate: yes
+    state:     enabled
+

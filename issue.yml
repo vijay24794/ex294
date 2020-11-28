@@ -1,0 +1,22 @@
+---
+- hosts: all
+  become: true
+  remote_user: vagrant
+  tasks: 
+    - name: replace the content of Development
+      copy: 
+        content: "Development"
+        dest: /etc/issue
+      when: inventory_hostname in groups['dev']
+
+    - name: replace the content of Development
+      copy: 
+        content: "Test"
+        dest: /etc/issue
+      when: inventory_hostname in groups['test']
+
+    - name: replace the content of Development
+      copy: 
+        content: "Production"
+        dest: /etc/issue
+      when: inventory_hostname in groups['prod']
