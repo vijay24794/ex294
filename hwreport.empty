@@ -1,5 +1,5 @@
-Host_name="hostname"
-Memory="memory"
-BIOS="biosversion"
+Host_name="inventoryhostname"
+Memory="total_memory"
+BIOS="bios_version"
 Sda_Size="sda_size"
 Sdb_Size="sdb_size"
